@@ -12,9 +12,13 @@ export async function createUser(data: RegisterUserData) {
 }
 
 export async function getUser(email: string) {
-    return await db.user.findUnique({
-        where: {
-            email: email,
-        },
-    });
+    try {
+        return await db.user.findUnique({
+            where: {
+                email: email,
+            },
+        });
+    } catch (e) {
+        throw new Error('User with email already exists');
+    }
 }

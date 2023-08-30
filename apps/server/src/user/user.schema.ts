@@ -7,3 +7,10 @@ const RegisterUserSchema = object({
 });
 
 export type RegisterUserData = Output<typeof RegisterUserSchema>;
+
+const LoginSchema = object({
+    email: string(),
+    password: string(),
+});
+
+export type LoginSchema = Output<typeof LoginSchema>;
