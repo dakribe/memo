@@ -1,16 +1,16 @@
-import Express from 'express';
+import express from 'express';
 import userRoutes from './user/user.route';
 
-const app = Express();
+const app = express();
 
-app.use(Express.json());
+app.use(express.json());
 
 app.get('/', (req, res) => {
-  return res.json('Hello world');
+    return res.json('Hello world');
 });
 
 app.use('/api/users', userRoutes);
 
 app.listen(8000, () => {
-  console.log('Server running on port 8000');
+    console.log('Server running on port 8000');
 });
