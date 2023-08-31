@@ -34,6 +34,8 @@ export async function signUp(req: Request, res: Response) {
         'secret',
     );
 
+    res.cookie('token', accessToken);
+
     return res.status(201).json({
         accessToken,
         user: {

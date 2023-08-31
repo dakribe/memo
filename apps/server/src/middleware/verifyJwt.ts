@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 export async function verifyJwt(req: Request, res: Response, next: NextFunction) {
-    const header = req.headers['authorization'];
-    const token = header && header.split(' ')[1];
+    const cookie = req.headers.cookie;
+    const token = cookie?.split('=')[1];
 
     if (token == null) return res.sendStatus(401);
 
