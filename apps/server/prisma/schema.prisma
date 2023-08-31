@@ -15,4 +15,13 @@ model User {
   email    String @unique
   username String
   password String
+
+  posts Post[]
+}
+
+model Post {
+  id       String @id @default(cuid())
+  content  String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 }

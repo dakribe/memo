@@ -3,6 +3,7 @@ import userRoutes from './user/user.route';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { User } from '@prisma/client';
+import postRoutes from './post/post.route';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
 
 app.listen(8000, () => {
     console.log('Server running on port 8000');

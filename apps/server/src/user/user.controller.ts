@@ -26,6 +26,7 @@ export async function signUp(req: Request, res: Response) {
     const accessToken = jwt.sign(
         {
             user: {
+                id: newUser.id,
                 email: newUser.email,
                 username: newUser.username,
             },
@@ -39,6 +40,7 @@ export async function signUp(req: Request, res: Response) {
     return res.status(201).json({
         accessToken,
         user: {
+            id: newUser.id,
             email: newUser.email,
             username: newUser.username,
         },
@@ -61,6 +63,7 @@ export async function signIn(req: Request, res: Response) {
     const accessToken = jwt.sign(
         {
             user: {
+                id: user.id,
                 email: user.email,
                 username: user.username,
             },
@@ -73,6 +76,7 @@ export async function signIn(req: Request, res: Response) {
     return res.status(201).json({
         accessToken,
         user: {
+            id: user.id,
             email: user.email,
             username: user.username,
         },
