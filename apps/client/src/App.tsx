@@ -3,6 +3,7 @@ import Root from './pages/root';
 import SignUp from './pages/signUp';
 import SignIn from './pages/signIn';
 import Protected from './pages/protected';
+import Profile from './pages/profile';
 
 const router = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     {
         path: '/protected',
         element: <Protected />,
+    },
+    {
+        path: '/:username',
+        element: <Profile />,
     },
 ]);
 
