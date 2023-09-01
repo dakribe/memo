@@ -14,3 +14,13 @@ export async function createPost(data: CreatePostType) {
         },
     });
 }
+
+export async function getPosts(username: string) {
+    return await db.post.findMany({
+        where: {
+            author: {
+                username: username,
+            },
+        },
+    });
+}

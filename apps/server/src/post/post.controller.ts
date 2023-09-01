@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CreatePostRequestType } from './post.schema';
-import { createPost } from './post.service';
+import { createPost, getPosts } from './post.service';
 
 export async function create(req: Request, res: Response) {
     const { content } = req.body as CreatePostRequestType;
@@ -13,4 +13,12 @@ export async function create(req: Request, res: Response) {
         console.log(e);
         return res.status(401).json({ error: e });
     }
+}
+
+export async function userPosts(req: Request, res: Response) {
+    const { username } = req.params;
+
+    const posts = await getPosts(username);
+
+    return res.status(201).json(posts);
 }
