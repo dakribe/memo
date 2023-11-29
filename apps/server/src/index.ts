@@ -1,9 +1,7 @@
-import express, { Request, Response, Express } from "express";
+import { Elysia } from "elysia";
 
-const app: Express = express();
+const app = new Elysia().get("/ping", () => "pong").listen(3000);
 
-app.get("/", (_: Request, res: Response) => {
-  return res.send({ message: "Hello world" });
-});
-
-app.listen(8000, () => console.log("Server running on http://localhost:8000"));
+console.log(
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+);
