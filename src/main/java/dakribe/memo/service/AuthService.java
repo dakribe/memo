@@ -21,14 +21,18 @@ public class AuthService {
     private final AuthenticationManager authManager;
 
     public AuthenticationResponse signUp(SignUpRequest request) {
-        var user = User.builder()
+        var user = userRepository.findByUsername(request.getUsername());
+        if (user.isPresent()) {
+            return null;
+        }
+        var newUser = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        userRepository.save(newUser);
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(newUser);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
