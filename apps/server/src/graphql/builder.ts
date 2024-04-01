@@ -4,10 +4,13 @@ import type PrismaTypes from "../../prisma/pothos-types";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import { db } from "../db";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { Session, User } from "lucia";
 
 export interface Context {
 	req: FastifyRequest;
 	reply: FastifyReply;
+	user: User | null;
+	session: Session | null;
 }
 
 export const builder = new SchemaBuilder<{

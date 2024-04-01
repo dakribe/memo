@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/cookie": "^9.3.1",
+    "@fastify/cors": "^9.0.1",
     "@lucia-auth/adapter-prisma": "^4.0.1",
     "@pothos/core": "^3.41.0",
     "@pothos/plugin-prisma": "^3.65.0",

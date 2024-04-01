@@ -59,9 +59,69 @@ builder.mutationField("registerUser", (t) =>
 			const session = await lucia.createSession(user.id, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
 
-			context.reply.setCookie("memo-cookie", sessionCookie.serialize());
+			context.reply.setCookie("memo", sessionCookie.serialize());
 
 			return user;
+		},
+	}),
+);
+
+builder.mutationField("signInUser", (t) =>
+	t.prismaField({
+		type: "User",
+		args: {
+			input: t.arg({ type: AuthInput, required: true }),
+		},
+		resolve: async (_, __, { input }, context) => {
+			const { username, password } = input;
+
+			const user = await db.user.findUnique({
+				where: {
+					username,
+				},
+			});
+			if (!user) {
+				throw new Error("User does not exist");
+			}
+
+			const validPassword = await new Argon2id().verify(
+				user.hashed_password,
+				password,
+			);
+			if (!validPassword) {
+				throw Error("Invalid password");
+			}
+
+			const session = await lucia.createSession(user.id, {});
+			const sessionCookie = lucia.createSessionCookie(session.id);
+
+			context.reply.setCookie("memo", sessionCookie.serialize());
+
+			return user;
+		},
+	}),
+);
+
+builder.queryField("me", (t) =>
+	t.prismaField({
+		type: "User",
+		resolve: async (_, __, ___, context) => {
+			const { user } = context;
+			if (!user) {
+				throw Error("User is not authenticated");
+			}
+
+			const data = await db.user.findUnique({
+				where: {
+					username: user?.username,
+				},
+			});
+
+			if (!data) {
+				throw Error("User is not authenticated");
+			}
+
+			return data;
 		},
 	}),
 );
