@@ -1,12 +1,25 @@
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { createYoga } from "graphql-yoga";
 import { schema } from "./graphql/schema";
+import cookie from "@fastify/cookie";
+import { Context } from "./graphql/builder";
 
-const app = fastify({ logger: true });
+const app = fastify({
+	logger: {
+		transport: {
+			target: "pino-pretty",
+		},
+	},
+});
+
+app.register(cookie, {
+	secret: "secret",
+});
 
 const yoga = createYoga<{
 	req: FastifyRequest;
 	reply: FastifyReply;
+	Context: Context;
 }>({
 	schema,
 	logging: {
