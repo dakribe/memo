@@ -1,0 +1,17 @@
+version: "2"
+sql:
+  - schema: "../../db/migrations"
+    engine: "postgresql"
+    queries: "./query"
+    gen:
+      go:
+        package: db
+        sql_package: "pgx/v5"
+        out: "db"
+        emit_exact_table_names: true
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.NullUUID"
+            nullable: true

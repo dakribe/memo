@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
+	"github.com/dakribe/memo/internal/postgres"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -15,16 +18,23 @@ func loadConfig() {
 }
 
 func main() {
-	startServer()
+	run()
 }
 
-func startServer() {
+func run() {
 	loadConfig()
+
+	dbUrl := os.Getenv("DB_URL")
+
+	db, err := postgres.NewPostgres(dbUrl)
+	fmt.Println(db)
+	if err != nil {
+		fmt.Println("Unable to connect")
+	}
+
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
+		c.SetCookie("test_cookie", "test", 3600, "/", "localhost", false, false)
 	})
 	r.Run()
 }
