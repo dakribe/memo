@@ -7,10 +7,10 @@ import (
 )
 
 type UserRoutes struct {
-	store UserStore
+	store UserService
 }
 
-func NewUserRoutes(store UserStore) *UserRoutes {
+func NewUserRoutes(store UserService) *UserRoutes {
 	return &UserRoutes{
 		store: store,
 	}

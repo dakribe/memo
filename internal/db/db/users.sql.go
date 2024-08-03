@@ -9,9 +9,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const Create = `-- name: Create :one
+const CreateUser = `-- name: CreateUser :one
 INSERT INTO users (
   username,
   email,
@@ -24,20 +25,47 @@ INSERT INTO users (
 RETURNING id
 `
 
-type CreateParams struct {
-	Username       string `json:"username"`
-	Email          string `json:"email"`
-	HashedPassword string `json:"hashed_password"`
+type CreateUserParams struct {
+	Username       pgtype.Text `json:"username"`
+	Email          string      `json:"email"`
+	HashedPassword string      `json:"hashed_password"`
 }
 
-func (q *Queries) Create(ctx context.Context, arg CreateParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, Create, arg.Username, arg.Email, arg.HashedPassword)
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, CreateUser, arg.Username, arg.Email, arg.HashedPassword)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
 }
 
-const SelectById = `-- name: SelectById :one
+const SelectUserByEmail = `-- name: SelectUserByEmail :one
+SELECT
+  id,
+  username,
+  email,
+  hashed_password,
+  created_at
+FROM
+  users
+WHERE
+  email = $1
+LIMIT 1
+`
+
+func (q *Queries) SelectUserByEmail(ctx context.Context, email string) (Users, error) {
+	row := q.db.QueryRow(ctx, SelectUserByEmail, email)
+	var i Users
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.HashedPassword,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const SelectUserById = `-- name: SelectUserById :one
 SELECT
   id,
   username,
@@ -51,8 +79,8 @@ WHERE
 LIMIT 1
 `
 
-func (q *Queries) SelectById(ctx context.Context, id uuid.UUID) (Users, error) {
-	row := q.db.QueryRow(ctx, SelectById, id)
+func (q *Queries) SelectUserById(ctx context.Context, id uuid.UUID) (Users, error) {
+	row := q.db.QueryRow(ctx, SelectUserById, id)
 	var i Users
 	err := row.Scan(
 		&i.ID,

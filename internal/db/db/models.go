@@ -9,9 +9,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Sessions struct {
+	ID        uuid.UUID        `json:"id"`
+	UserID    uuid.UUID        `json:"user_id"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+}
+
 type Users struct {
 	ID             uuid.UUID        `json:"id"`
-	Username       string           `json:"username"`
+	Username       pgtype.Text      `json:"username"`
 	Email          string           `json:"email"`
 	HashedPassword string           `json:"hashed_password"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
