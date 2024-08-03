@@ -34,3 +34,13 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (u
 	err := row.Scan(&id)
 	return id, err
 }
+
+const DeleteSession = `-- name: DeleteSession :exec
+DELETE FROM sessions
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, DeleteSession, id)
+	return err
+}

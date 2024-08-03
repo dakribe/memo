@@ -53,3 +53,11 @@ func (s *SessionService) CreateSessionCookie(value string) http.Cookie {
 
 	return c
 }
+
+func (s *SessionService) DeleteSession(ctx context.Context, id uuid.UUID) error {
+	err := s.db.DeleteSession(ctx, id)
+	if err != nil {
+		return fmt.Errorf("unable to delete session: %w", err)
+	}
+	return nil
+}

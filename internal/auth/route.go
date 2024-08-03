@@ -25,6 +25,8 @@ func NewAuthRoutes(userSvc user.UserService, sessionSvc SessionService) *AuthRou
 func (a *AuthRoutes) Register(r *chi.Mux) {
 	r.Route("/api/auth", func(r chi.Router) {
 		r.Post("/register", a.register)
+		r.Post("/login", a.login)
+		r.Post("/signout", a.singOut)
 	})
 }
 
@@ -72,4 +74,43 @@ func (a *AuthRoutes) register(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &c)
 	w.WriteHeader(http.StatusOK)
+}
+
+type LoginRequest struct {
+	Email    string
+	Password string
+}
+
+func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
+	var loginRequest LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	u, err := a.userSvc.FindByEmail(context.Background(), loginRequest.Email)
+	if err != nil {
+		http.Error(w, "invalid email", http.StatusBadRequest)
+		return
+	}
+
+	validPw := CheckPassword(loginRequest.Password, u.HashedPassword)
+	if !validPw {
+		http.Error(w, "invalid password", http.StatusBadRequest)
+		return
+	}
+
+	sessionId, err := a.sessionSvc.CreateSession(context.Background(), u.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	c := a.sessionSvc.CreateSessionCookie(sessionId.String())
+
+	http.SetCookie(w, &c)
+	w.WriteHeader(http.StatusOK)
+}
+
+func (a *AuthRoutes) singOut(w http.ResponseWriter, r *http.Request) {
 }

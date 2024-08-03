@@ -8,3 +8,6 @@ INSERT INTO sessions (
 )
 RETURNING id;
 
+-- name: DeleteSession :exec
+DELETE FROM sessions
+WHERE id = @id;
