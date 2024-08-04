@@ -8,6 +8,16 @@ INSERT INTO sessions (
 )
 RETURNING id;
 
+-- name: GetSession :one
+SELECT 
+  id,
+  user_id,
+  expires_at
+FROM
+  sessions
+WHERE
+  id = @id;
+
 -- name: DeleteSession :exec
 DELETE FROM sessions
 WHERE id = @id;

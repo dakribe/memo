@@ -54,10 +54,49 @@ func (s *SessionService) CreateSessionCookie(value string) http.Cookie {
 	return c
 }
 
+func (s *SessionService) GetSession(id uuid.UUID) (db.Sessions, error) {
+	sess, err := s.db.GetSession(context.Background(), id)
+	if err != nil {
+		return db.Sessions{}, fmt.Errorf("unable to get session: %w", err)
+	}
+
+	return sess, nil
+}
+
 func (s *SessionService) DeleteSession(ctx context.Context, id uuid.UUID) error {
 	err := s.db.DeleteSession(ctx, id)
 	if err != nil {
 		return fmt.Errorf("unable to delete session: %w", err)
 	}
 	return nil
+}
+
+func SessionMiddleware(s *SessionService) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			sessionCookie, err := r.Cookie("memo_session")
+			if err != nil {
+				fmt.Println("unable get to session cookie")
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			sessionId, err := uuid.Parse(sessionCookie.Value)
+			if err != nil {
+				fmt.Println("invalid session ID")
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			session, err := s.GetSession(sessionId)
+			if err != nil {
+				fmt.Println("unable to get session from db: %w", err)
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), "session", session)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }

@@ -26,7 +26,12 @@ func (a *AuthRoutes) Register(r *chi.Mux) {
 	r.Route("/api/auth", func(r chi.Router) {
 		r.Post("/register", a.register)
 		r.Post("/login", a.login)
-		r.Post("/signout", a.singOut)
+
+		r.Group(func(r chi.Router) {
+			r.Use(SessionMiddleware(&a.sessionSvc))
+			r.Post("/signout", a.singOut)
+			r.Get("/me", a.me)
+		})
 	})
 }
 
@@ -113,4 +118,10 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AuthRoutes) singOut(w http.ResponseWriter, r *http.Request) {
+}
+
+func (a *AuthRoutes) me(w http.ResponseWriter, r *http.Request) {
+	session := r.Context().Value("session").(db.Sessions)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(session)
 }

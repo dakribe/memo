@@ -44,3 +44,21 @@ func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, DeleteSession, id)
 	return err
 }
+
+const GetSession = `-- name: GetSession :one
+SELECT 
+  id,
+  user_id,
+  expires_at
+FROM
+  sessions
+WHERE
+  id = $1
+`
+
+func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Sessions, error) {
+	row := q.db.QueryRow(ctx, GetSession, id)
+	var i Sessions
+	err := row.Scan(&i.ID, &i.UserID, &i.ExpiresAt)
+	return i, err
+}
