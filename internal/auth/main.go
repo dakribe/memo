@@ -23,7 +23,8 @@ func NewSessionService(db *db.Queries) SessionService {
 
 func newTimestamp(time time.Time) pgtype.Timestamp {
 	return pgtype.Timestamp{
-		Time: time,
+		Time:  time,
+		Valid: true,
 	}
 }
 
