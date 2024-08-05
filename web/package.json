@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@modular-forms/solid": "^0.22.1",
     "@solidjs/router": "^0.14.1",
-    "solid-js": "^1.8.18"
+    "solid-js": "^1.8.18",
+    "valibot": "^0.37.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
