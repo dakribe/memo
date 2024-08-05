@@ -6,8 +6,10 @@ import (
 	"net/http"
 
 	"github.com/dakribe/memo/internal/db/db"
+	"github.com/dakribe/memo/internal/rest"
 	"github.com/dakribe/memo/internal/user"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 )
 
 type AuthRoutes struct {
@@ -44,7 +46,7 @@ func (a *AuthRoutes) register(w http.ResponseWriter, r *http.Request) {
 	var registerRequest RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&registerRequest)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		render.Render(w, r, rest.InvalidRequest(err))
 		return
 	}
 

@@ -1,6 +1,21 @@
 import { createForm, SubmitHandler, valiForm } from "@modular-forms/solid";
 import * as v from "valibot";
 
+const login = async (values: LoginForm) => {
+  const res = await fetch("http://localhost:8080/api/auth/login", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(values),
+  });
+
+  if (res.ok) {
+    console.log("success");
+  }
+};
+
 const LoginSchema = v.object({
   email: v.pipe(
     v.string(),
@@ -22,7 +37,7 @@ export function LoginForm() {
   });
 
   const handleLogin: SubmitHandler<LoginForm> = (values) => {
-    console.log(values);
+    login(values);
   };
 
   return (
