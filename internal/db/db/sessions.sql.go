@@ -46,19 +46,69 @@ func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
 }
 
 const GetSession = `-- name: GetSession :one
-SELECT 
-  id,
-  user_id,
-  expires_at
+SELECT
+  sessions.id,
+  sessions.user_id,
+  sessions.expires_at,
+  users.email
 FROM
   sessions
+  JOIN users on sessions.user_id = users.id
 WHERE
-  id = $1
+  sessions.id = $1
 `
 
-func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Sessions, error) {
+type GetSessionRow struct {
+	ID        uuid.UUID        `json:"id"`
+	UserID    uuid.UUID        `json:"user_id"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+	Email     string           `json:"email"`
+}
+
+func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (GetSessionRow, error) {
 	row := q.db.QueryRow(ctx, GetSession, id)
-	var i Sessions
-	err := row.Scan(&i.ID, &i.UserID, &i.ExpiresAt)
+	var i GetSessionRow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ExpiresAt,
+		&i.Email,
+	)
 	return i, err
+}
+
+const GetUserSessions = `-- name: GetUserSessions :many
+SELECT
+sessions.id,
+sessions.expires_at,
+users.email
+FROM sessions
+JOIN users ON sessions.user_id = users.id
+WHERE users.id = $1
+`
+
+type GetUserSessionsRow struct {
+	ID        uuid.UUID        `json:"id"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+	Email     string           `json:"email"`
+}
+
+func (q *Queries) GetUserSessions(ctx context.Context, id uuid.UUID) ([]GetUserSessionsRow, error) {
+	rows, err := q.db.Query(ctx, GetUserSessions, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserSessionsRow
+	for rows.Next() {
+		var i GetUserSessionsRow
+		if err := rows.Scan(&i.ID, &i.ExpiresAt, &i.Email); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

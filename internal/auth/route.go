@@ -123,7 +123,16 @@ func (a *AuthRoutes) singOut(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AuthRoutes) me(w http.ResponseWriter, r *http.Request) {
-	session := r.Context().Value("session").(db.Sessions)
+	session, ok := r.Context().Value("session").(db.GetSessionRow)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+
+	}
+	res := SessionResponse{
+		Email:  session.Email,
+		UserId: session.UserID.String(),
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(session)
+	json.NewEncoder(w).Encode(res)
 }

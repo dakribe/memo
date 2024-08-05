@@ -9,14 +9,25 @@ INSERT INTO sessions (
 RETURNING id;
 
 -- name: GetSession :one
-SELECT 
-  id,
-  user_id,
-  expires_at
+SELECT
+  sessions.id,
+  sessions.user_id,
+  sessions.expires_at,
+  users.email
 FROM
   sessions
+  JOIN users on sessions.user_id = users.id
 WHERE
-  id = @id;
+  sessions.id = @id;
+
+-- name: GetUserSessions :many
+SELECT
+sessions.id,
+sessions.expires_at,
+users.email
+FROM sessions
+JOIN users ON sessions.user_id = users.id
+WHERE users.id = @id;
 
 -- name: DeleteSession :exec
 DELETE FROM sessions

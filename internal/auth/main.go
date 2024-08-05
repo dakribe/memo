@@ -28,6 +28,11 @@ func newTimestamp(time time.Time) pgtype.Timestamp {
 	}
 }
 
+type SessionResponse struct {
+	UserId string `json:"userId"`
+	Email  string `json:"email"`
+}
+
 func (s *SessionService) CreateSession(ctx context.Context, userId uuid.UUID) (uuid.UUID, error) {
 	monthFromNow := time.Now().AddDate(0, 1, 0)
 	sessionId, err := s.db.CreateSession(ctx, db.CreateSessionParams{
@@ -55,13 +60,26 @@ func (s *SessionService) CreateSessionCookie(value string) http.Cookie {
 	return c
 }
 
-func (s *SessionService) GetSession(id uuid.UUID) (db.Sessions, error) {
+func (s *SessionService) GetSession(id uuid.UUID) (db.GetSessionRow, error) {
 	sess, err := s.db.GetSession(context.Background(), id)
 	if err != nil {
-		return db.Sessions{}, fmt.Errorf("unable to get session: %w", err)
+		return db.GetSessionRow{}, fmt.Errorf("unable to get session: %w", err)
 	}
 
 	return sess, nil
+}
+
+func (s *SessionService) ValidateSession(id uuid.UUID) error {
+	sessions, err := s.db.GetUserSessions(context.Background(), id)
+	if err != nil {
+		return fmt.Errorf("unable to get user sessions: %w", err)
+	}
+
+	if len(sessions) == 0 {
+		return fmt.Errorf("no sessions exist on the user")
+	}
+
+	return nil
 }
 
 func (s *SessionService) DeleteSession(ctx context.Context, id uuid.UUID) error {
@@ -70,6 +88,10 @@ func (s *SessionService) DeleteSession(ctx context.Context, id uuid.UUID) error 
 		return fmt.Errorf("unable to delete session: %w", err)
 	}
 	return nil
+}
+
+func isSessionExpired(timestamp pgtype.Timestamp) bool {
+	return time.Now().After(timestamp.Time)
 }
 
 func SessionMiddleware(s *SessionService) func(http.Handler) http.Handler {
@@ -90,6 +112,13 @@ func SessionMiddleware(s *SessionService) func(http.Handler) http.Handler {
 			}
 
 			session, err := s.GetSession(sessionId)
+			exp := isSessionExpired(session.ExpiresAt)
+			if exp {
+				fmt.Println("session is expired")
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			if err != nil {
 				fmt.Println("unable to get session from db: %w", err)
 				next.ServeHTTP(w, r)
