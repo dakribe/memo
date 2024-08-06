@@ -82,8 +82,8 @@ func (s *SessionService) ValidateSession(id uuid.UUID) error {
 	return nil
 }
 
-func (s *SessionService) DeleteSession(ctx context.Context, id uuid.UUID) error {
-	err := s.db.DeleteSession(ctx, id)
+func (s *SessionService) DeleteSession(id uuid.UUID) error {
+	err := s.db.DeleteSession(context.Background(), id)
 	if err != nil {
 		return fmt.Errorf("unable to delete session: %w", err)
 	}

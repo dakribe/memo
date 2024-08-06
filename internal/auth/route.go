@@ -10,6 +10,7 @@ import (
 	"github.com/dakribe/memo/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/google/uuid"
 )
 
 type AuthRoutes struct {
@@ -120,6 +121,36 @@ func (a *AuthRoutes) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AuthRoutes) singOut(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("memo_session")
+	if err != nil {
+		render.Render(w, r, rest.UnauthorizedRequest(err))
+		return
+	}
+
+	sessionId, err := uuid.Parse(c.Value)
+	if err != nil {
+		render.Render(w, r, rest.UnauthorizedRequest(err))
+		return
+	}
+
+	err = a.sessionSvc.DeleteSession(sessionId)
+	if err != nil {
+		render.Render(w, r, rest.InternalServerError(err))
+		return
+	}
+
+	emptyCookie := http.Cookie{
+		Name:     "memo_session",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1,
+	}
+
+	http.SetCookie(w, &emptyCookie)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (a *AuthRoutes) me(w http.ResponseWriter, r *http.Request) {
