@@ -8,6 +8,7 @@ import (
 	"github.com/dakribe/memo/internal/auth"
 	postgres "github.com/dakribe/memo/internal/db"
 	"github.com/dakribe/memo/internal/db/db"
+	"github.com/dakribe/memo/internal/memo"
 	"github.com/dakribe/memo/internal/user"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -27,6 +28,7 @@ func main() {
 
 	userStore := user.NewUserStore(db)
 	sessionSvc := auth.NewSessionService(db)
+	memoSvc := memo.NewMemoService(db)
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{
@@ -42,6 +44,7 @@ func main() {
 
 	user.NewUserRoutes(userStore).Register(r)
 	auth.NewAuthRoutes(userStore, sessionSvc).Register(r)
+	memo.NewMemoRoutes(memoSvc, &sessionSvc).Register(r)
 
 	http.ListenAndServe(":8080", r)
 }

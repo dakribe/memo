@@ -9,6 +9,24 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Likes struct {
+	ID     uuid.UUID `json:"id"`
+	MemoID uuid.UUID `json:"memo_id"`
+}
+
+type Memos struct {
+	ID        uuid.UUID        `json:"id"`
+	Content   string           `json:"content"`
+	UserID    uuid.UUID        `json:"user_id"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
+type Profiles struct {
+	UserID      uuid.UUID   `json:"user_id"`
+	Bannerimage pgtype.Text `json:"bannerimage"`
+	Bio         pgtype.Text `json:"bio"`
+}
+
 type Sessions struct {
 	ID        uuid.UUID        `json:"id"`
 	UserID    uuid.UUID        `json:"user_id"`

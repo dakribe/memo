@@ -22,3 +22,17 @@ func InvalidRequest(err error) render.Renderer {
 		HTTPStatusCode: 400,
 	}
 }
+
+func UnauthorizedRequest(err error) render.Renderer {
+	return &ErrorResponse{
+		Err:            err,
+		HTTPStatusCode: 401,
+	}
+}
+
+func InternalServerError(err error) render.Renderer {
+	return &ErrorResponse{
+		Err:            err,
+		HTTPStatusCode: 500,
+	}
+}
