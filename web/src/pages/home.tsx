@@ -1,11 +1,11 @@
-import { useAuth } from "../providers/auth";
+import { CreateMemo } from "../components/create-memo";
+import { MemoFeed } from "../components/memo-feed";
 
 export function Home() {
-  const { session } = useAuth();
   return (
     <div>
-      <h1>Home</h1>
-      <p>Hello {session()?.email}</p>
+      <CreateMemo />
+      <MemoFeed />
     </div>
   );
 }
