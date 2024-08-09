@@ -11,9 +11,15 @@ importers:
       '@modular-forms/solid':
         specifier: ^0.22.1
         version: 0.22.1(solid-js@1.8.19)(typescript@5.5.4)
+      '@solidjs/meta':
+        specifier: ^0.29.4
+        version: 0.29.4(solid-js@1.8.19)
       '@solidjs/router':
         specifier: ^0.14.1
         version: 0.14.1(solid-js@1.8.19)
+      lucide-solid:
+        specifier: ^0.420.0
+        version: 0.420.0(solid-js@1.8.19)
       solid-js:
         specifier: ^1.8.18
         version: 1.8.19
@@ -396,6 +402,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@solidjs/meta@0.29.4':
+    resolution: {integrity: sha512-zdIWBGpR9zGx1p1bzIPqF5Gs+Ks/BH8R6fWhmUa/dcK1L2rUC8BAcZJzNRYBQv74kScf1TSOs0EY//Vd/I0V8g==}
+    peerDependencies:
+      solid-js: '>=1.8.4'
+
   '@solidjs/router@0.14.1':
     resolution: {integrity: sha512-GumQ4jbt5xDngLypAndC4EjapY/3DP0G8Az4YWEVQHdCtjHwB8IOm32eEBxE9lKpOffbtXV0r/0X0mofHJ1m5w==}
     peerDependencies:
@@ -693,6 +704,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-solid@0.420.0:
+    resolution: {integrity: sha512-NI8pbYWI2saErqsW3MzVe3Kjj3katrJT4Wq0fV9SOlN6AUH3wBYkV6im3skbGlHgTRAbsB+3OBGQbbiJFHTW+g==}
+    peerDependencies:
+      solid-js: ^1.4.7
 
   merge-anything@5.1.7:
     resolution: {integrity: sha512-eRtbOb1N5iyH0tkQDAoQ4Ipsp/5qSR79Dzrz8hEPxRX10RWWR/iQXdoKmBSRCThY1Fh5EhISDtpSc93fpxUniQ==}
@@ -1319,6 +1335,10 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.20.0':
     optional: true
 
+  '@solidjs/meta@0.29.4(solid-js@1.8.19)':
+    dependencies:
+      solid-js: 1.8.19
+
   '@solidjs/router@0.14.1(solid-js@1.8.19)':
     dependencies:
       solid-js: 1.8.19
@@ -1610,6 +1630,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-solid@0.420.0(solid-js@1.8.19):
+    dependencies:
+      solid-js: 1.8.19
 
   merge-anything@5.1.7:
     dependencies:
