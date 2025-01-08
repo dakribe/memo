@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, data, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import {
 	commitSession,
@@ -15,20 +15,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	const authEmail = cookie.get("auth:email");
 	const authError = cookie.get(authenticator.sessionErrorKey);
 
-	return Response.json(
-		{ authEmail, authError },
-		{
-			headers: {
-				"set-cookie": await commitSession(cookie),
-			},
+	return data({ authEmail, authError } as const, {
+		headers: {
+			"Set-Cookie": await commitSession(cookie),
 		},
-	);
+	});
 }
 
 export async function action({ request }: ActionFunctionArgs) {
 	const url = new URL(request.url);
 	const currentPath = url.pathname;
-	console.log("ACTION");
 
 	await authenticator.authenticate("TOTP", request, {
 		successRedirect: "/auth/verify",
@@ -38,7 +34,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Login() {
-	const { authEmail } = useLoaderData<typeof loader>();
+	const { authEmail, authError } = useLoaderData<typeof loader>();
+	console.log(authEmail);
 
 	return (
 		<div>
@@ -53,6 +50,10 @@ export default function Login() {
 				/>
 				<button type="submit">Continue with Email</button>
 			</Form>
+
+			{!authEmail && authError && (
+				<span className="font-semibold text-red-400">{authError.message}</span>
+			)}
 		</div>
 	);
 }

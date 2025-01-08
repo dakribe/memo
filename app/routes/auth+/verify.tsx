@@ -15,10 +15,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 	if (!authEmail) return redirect("/auth/login");
 
-	// Commit session to clear any `flash` error message.
 	return Response.json({ authEmail, authError } as const, {
 		headers: {
-			"set-cookie": await commitSession(cookie),
+			"Set-Cookie": await commitSession(cookie),
 		},
 	});
 }

@@ -4,6 +4,7 @@ import { TOTPStrategy } from "remix-auth-totp";
 import { sendAuthEmail } from "../email/email.server";
 import { byEmail, createUser } from "../user";
 import { sessionStorage } from "./auth-session.server";
+import { redirect } from "@remix-run/node";
 
 export let authenticator = new Authenticator<User>(sessionStorage, {
 	throwOnError: true,
@@ -12,13 +13,10 @@ export let authenticator = new Authenticator<User>(sessionStorage, {
 authenticator.use(
 	new TOTPStrategy(
 		{
-			secret: "secret",
-			magicLinkPath: "/magic-link",
+			magicLinkPath: "/auth/magic-link",
+			secret: process.env.ENCRYPTION_SECRET!,
 			sendTOTP: async ({ email, code, magicLink }) => {
-				console.log("SEND TOTP");
-				if (process.env.NODE_ENV === "development") {
-					console.log("[Dev-Only] TOTP Code: ", code);
-				}
+				console.log("[Dev-Only] TOTP Code: ", code);
 				await sendAuthEmail({ email, code, magicLink });
 			},
 		},
@@ -34,3 +32,16 @@ authenticator.use(
 	),
 	"TOTP",
 );
+
+export async function requireUser(
+	req: Request,
+	{ redirectTo }: { redirectTo?: string | null } = {},
+) {
+	const sessionUser = await authenticator.isAuthenticated(req);
+	const user = sessionUser;
+	if (!user) {
+		if (!redirectTo) throw redirect("/auth/logout");
+		throw redirect(redirectTo);
+	}
+	return user;
+}

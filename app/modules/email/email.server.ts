@@ -10,9 +10,8 @@ export type SendEmailOptions = {
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function sendEmail(options: SendEmailOptions) {
-	console.log("Sending email");
 	const { error } = await resend.emails.send({
-		from: "<onboarding@resend.dev>",
+		from: "onboarding@resend.dev",
 		to: options.to,
 		subject: options.subject,
 		html: options.html,
