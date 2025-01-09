@@ -11,7 +11,7 @@ export default function Home() {
 	const { user } = useLoaderData<typeof loader>();
 	return (
 		<div>
-			<p>{user.email}</p>
+			<p>Hello, {user?.username}</p>
 		</div>
 	);
 }

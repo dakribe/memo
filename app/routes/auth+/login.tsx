@@ -35,7 +35,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
 	const { authEmail, authError } = useLoaderData<typeof loader>();
-	console.log(authEmail);
 
 	return (
 		<div>

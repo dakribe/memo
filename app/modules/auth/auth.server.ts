@@ -37,8 +37,7 @@ export async function requireUser(
 	req: Request,
 	{ redirectTo }: { redirectTo?: string | null } = {},
 ) {
-	const sessionUser = await authenticator.isAuthenticated(req);
-	const user = sessionUser;
+	const user = await authenticator.isAuthenticated(req);
 	if (!user) {
 		if (!redirectTo) throw redirect("/auth/logout");
 		throw redirect(redirectTo);

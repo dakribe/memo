@@ -6,7 +6,7 @@ import { commitSession, getSession } from "~/modules/auth/auth-session.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	await authenticator.isAuthenticated(request, {
-		successRedirect: "/home",
+		successRedirect: "/onboarding/username",
 	});
 
 	const cookie = await getSession(request.headers.get("cookie"));
