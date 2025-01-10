@@ -9,6 +9,10 @@ import { z } from "zod";
 import { requireUser } from "~/modules/auth/auth.server";
 import { useForm } from "@conform-to/react";
 import { update } from "~/modules/user";
+import {
+	commitSession,
+	sessionStorage,
+} from "~/modules/auth/auth-session.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await requireUser(request, { redirectTo: "/auth/login" });
@@ -30,8 +34,21 @@ export async function action({ request }: ActionFunctionArgs) {
 	if (submission.status !== "success") {
 		return submission.reply();
 	}
-	await update(submission.value.username, user.id);
-	return redirect("/home");
+
+	const { username } = submission.value;
+	const [newUser] = await update(username, user.id);
+
+	const session = await sessionStorage.getSession(
+		request.headers.get("cookie"),
+	);
+
+	session.set("user", newUser);
+
+	return redirect("/home", {
+		headers: {
+			"Set-Cookie": await commitSession(session),
+		},
+	});
 }
 
 export default function Onboarding() {
