@@ -13,6 +13,7 @@ import {
 	commitSession,
 	sessionStorage,
 } from "~/modules/auth/auth-session.server";
+import { Profile } from "~/modules/profile";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await requireUser(request, { redirectTo: "/auth/login" });
@@ -43,6 +44,8 @@ export async function action({ request }: ActionFunctionArgs) {
 	);
 
 	session.set("user", newUser);
+
+	await Profile.create(user.id, newUser.username!);
 
 	return redirect("/home", {
 		headers: {

@@ -18,5 +18,9 @@ export async function byUsername(username: string) {
 }
 
 export async function update(username: string, userId: string) {
-	return await db.update(user).set({ username }).where(eq(user.id, userId));
+	return await db
+		.update(user)
+		.set({ username })
+		.where(eq(user.id, userId))
+		.returning();
 }
