@@ -14,6 +14,9 @@ import {
 	sessionStorage,
 } from "~/modules/auth/auth-session.server";
 import { Profile } from "~/modules/profile";
+import { Form } from "node_modules/@conform-to/react/context";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await requireUser(request, { redirectTo: "/auth/login" });
@@ -65,11 +68,39 @@ export default function Onboarding() {
 	});
 	return (
 		<div>
-			<form method="post" id={form.id} onSubmit={form.onSubmit}>
-				<input type="text" name={fields.username.name} />
-				<div>{fields.username.errors}</div>
-				<button type="submit">Submit</button>
-			</form>
+			<div className="mx-auto flex h-screen w-screen max-w-7xl flex-col px-6">
+				<div className="mx-auto flex h-full w-full max-w-[350px] flex-col items-center justify-center gap-6">
+					<div className="flex w-full flex-col items-center gap-6">
+						<div className="flex w-full flex-col items-center justify-center gap-2">
+							<div className="flex flex-col items-center gap-1">
+								<h1 className="text-center text-2xl font-semibold tracking-tight">
+									Welcome to Memo!
+								</h1>
+								<p className="text-center text-base font-normal text-gray-600">
+									Please create a username for your account.
+								</p>
+							</div>
+						</div>
+						<form
+							method="post"
+							id={form.id}
+							onSubmit={form.onSubmit}
+							className="flex w-full flex-col gap-2"
+							autoComplete="off"
+						>
+							<div className="flex flex-col gap-2">
+								<Input
+									type="text"
+									name={fields.username.name}
+									placeholder="@username"
+								/>
+								<div>{fields.username.errors}</div>
+								<Button type="submit">Continue</Button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }
