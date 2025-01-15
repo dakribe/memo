@@ -5,18 +5,19 @@ import {
 	Bell,
 	Mail,
 	Bookmark,
-	User,
+	User as UserIcon,
 	Settings,
 	LucideIcon,
 } from "lucide-react";
+import { User } from "~/modules/user/sql";
 
 interface SidebarItem {
 	label: string;
-	url: string;
-	icon?: LucideIcon;
+	url: string | ((user: User) => string);
+	icon: LucideIcon;
 }
 
-const items: SidebarItem[] = [
+const sidebarItems: SidebarItem[] = [
 	{
 		label: "Home",
 		url: "/home",
@@ -44,8 +45,8 @@ const items: SidebarItem[] = [
 	},
 	{
 		label: "Profile",
-		url: "/profile",
-		icon: User,
+		url: (user: User) => `/${user.username}`,
+		icon: UserIcon,
 	},
 	{
 		label: "Settings",
@@ -54,7 +55,16 @@ const items: SidebarItem[] = [
 	},
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+	user: User;
+}
+
+export function Sidebar({ user }: SidebarProps) {
+	const items = sidebarItems.map((item) => ({
+		...item,
+		url: typeof item.url === "function" ? item.url(user) : item.url,
+	}));
+
 	return (
 		<div className="h-screen w-64 p-4 border-r border-gray-200 flex flex-col">
 			<div className="mb-4">
