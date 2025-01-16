@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import {
 	Home,
 	Search,
@@ -11,6 +11,13 @@ import {
 } from "lucide-react";
 import { User } from "~/modules/user/sql";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { ModeToggle } from "./mode-toggle";
 
 interface SidebarItem {
 	label: string;
@@ -61,6 +68,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ user }: SidebarProps) {
+	const nav = useNavigate();
 	const items = sidebarItems.map((item) => ({
 		...item,
 		url: typeof item.url === "function" ? item.url(user) : item.url,
@@ -89,15 +97,34 @@ export function Sidebar({ user }: SidebarProps) {
 				</ul>
 			</div>
 
-			<div className="mt-8 flex items-center gap-3">
-				<Avatar>
-					<AvatarFallback>{user.username?.slice(0, 1)}</AvatarFallback>
-				</Avatar>
-				<div>
-					<p className="font-semibold">{user.username}</p>
-					<p className="text-sm text-gray-500">@{user.username}</p>
-				</div>
-			</div>
+			<DropdownMenu>
+				<DropdownMenuTrigger>
+					<div className="p-2 flex items-center gap-3">
+						<Avatar>
+							<AvatarFallback>{user.username?.slice(0, 1)}</AvatarFallback>
+						</Avatar>
+						<div>
+							<p className="font-semibold">{user.username}</p>
+							<p className="text-sm text-gray-500">@{user.username}</p>
+						</div>
+					</div>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent side="top">
+					<DropdownMenuLabel>
+						<ModeToggle />
+					</DropdownMenuLabel>
+					<DropdownMenuLabel
+						className="cursor-pointer"
+						onClick={() =>
+							nav("/auth/logout", {
+								replace: true,
+							})
+						}
+					>
+						Logout
+					</DropdownMenuLabel>
+				</DropdownMenuContent>
+			</DropdownMenu>
 		</div>
 	);
 }
