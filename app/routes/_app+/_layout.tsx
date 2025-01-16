@@ -16,9 +16,10 @@ export default function Layout() {
 	const { user } = useLoaderData<typeof loader>();
 	return (
 		<div className="min-h-screen max-w-4xl mx-auto">
-			<div className="flex justify-between">
+			<div className="flex">
 				<Sidebar user={user} />
 				<Outlet />
+				<div className="border-r border-gray-200"></div>
 			</div>
 		</div>
 	);
